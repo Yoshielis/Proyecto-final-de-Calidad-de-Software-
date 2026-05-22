@@ -5,42 +5,37 @@ export interface Student {
   email: string;
   password: string;
   name: string;
-  cedula: string;           // NUEVO: Cédula (solo admin puede editar)
-  phone: string;            // NUEVO: Teléfono (estudiante puede editar)
-  birthDate: string;        // NUEVO: Fecha de nacimiento
-  address: string;          // NUEVO: Dirección
-  emergencyContact: {       // NUEVO: Contacto de emergencia
+  cedula: string;
+  phone: string;
+  birthDate: string;
+  address: string;
+  emergencyContact: {
     name: string;
     phone: string;
     relationship: string;
   };
   disability: string;
-  disabilityCertificate: string; // NUEVO: Certificado de discapacidad (URL o texto)
+  disabilityCertificate: string;
   avgGrade: number;
   moodHistory: number[];
   absences: number;
   risk: 'low' | 'medium' | 'high';
-  courses: CourseEnrollment[];  // CAMBIADO: ahora es un array de objetos con profesor
+  courses: CourseEnrollment[];
   alerts: string[];
   avatar: string;
-  coordinatorId: number;    // NUEVO: ID del coordinador DEO asignado
-  createdAt: string;        // NUEVO: Fecha de registro
-  updatedAt: string;        // NUEVO: Última actualización
+  coordinatorId: number;
+  createdAt: string;
+  updatedAt: string;
   status?: 'pending' | 'active' | 'requires_update';
   assignedTeachers?: {
-  teacherId: number;
-  teacherName: string;
-}[];
-  // ===== NUEVO: Expediente DEO =====
-
-disabilityLevel?: string;
-academicImpact?: string;
-
-reasonableAdjustments?: string[];
-
-supportPlan?: string;
-
-supportDocuments?: string[];
+    teacherId: number;
+    teacherName: string;
+  }[];
+  disabilityLevel?: string;
+  academicImpact?: string;
+  reasonableAdjustments?: string[];
+  supportPlan?: string;
+  supportDocuments?: string[];
 }
 
 export interface CourseEnrollment {
@@ -57,13 +52,15 @@ export interface Teacher {
   email: string;
   password: string;
   name: string;
-  cedula: string;           // NUEVO
-  phone: string;            // NUEVO
+  cedula: string;
+  phone: string;
   specialty: string;
-  department: string;       // NUEVO
-  courses: string[];        // Cursos que dicta
+  department: string;
+  courses: string[];
   avatar: string;
-  coordinatorId: number;    // NUEVO: Coordinador DEO asignado
+  coordinatorId: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Coordinator {
@@ -73,8 +70,10 @@ export interface Coordinator {
   name: string;
   cedula: string;
   phone: string;
-  department: string;       // Facultad que coordina
+  department: string;
   avatar: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Admin {
@@ -85,13 +84,15 @@ export interface Admin {
   cedula: string;
   phone: string;
   role: 'super_admin' | 'admin';
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface DailyReport {
   id?: number;
   studentId: number;
   studentEmail: string;
-  studentName: string;      // NUEVO: Para fácil referencia
+  studentName: string;
   mood: number;
   attended: boolean;
   difficulties: string[];
@@ -99,7 +100,7 @@ export interface DailyReport {
   supportRequest: string;
   completedGoals: string[];
   riskDetected: boolean;
-  riskLevel: 'low' | 'medium' | 'high';  // NUEVO
+  riskLevel: 'low' | 'medium' | 'high';
   createdAt: string;
   date: string;
 }
@@ -111,7 +112,7 @@ export interface ProgressStats {
   improvementRate: number;
   recommendations: string[];
   comparisonData: { period: string; moodAvg: number; attendance: number }[];
-  riskEvolution: { date: string; risk: string }[];  // NUEVO
+  riskEvolution: { date: string; risk: string }[];
 }
 
 export interface Task {
@@ -120,17 +121,17 @@ export interface Task {
   userEmail: string;
   createdAt: Date;
   completed: boolean;
-  category: 'study' | 'personal' | 'deadline';  // NUEVO
-  dueDate?: Date;           // NUEVO
+  category: 'study' | 'personal' | 'deadline';
+  dueDate?: Date;
 }
 
 export interface StudyReminder {
   id?: number;
   text: string;
   userEmail: string;
-  courseName: string;       // NUEVO: Materia específica
+  courseName: string;
   createdAt: Date;
-  scheduledFor: Date;       // NUEVO: Fecha programada
+  scheduledFor: Date;
 }
 
 export interface AuditLog {
@@ -138,8 +139,8 @@ export interface AuditLog {
   action: string;
   timestamp: string;
   user: string;
-  userRole: string;         // NUEVO
-  details?: string;         // NUEVO
+  userRole: string;
+  details?: string;
 }
 
 export type UserRole = 'student' | 'teacher' | 'coordinator' | 'admin';
@@ -152,9 +153,38 @@ export interface CurrentUser {
   cedula?: string;
 }
 
-// NUEVO: Para tokens JWT
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
   expiresAt: number;
+}
+
+// ========== REPORTE (para CU6/CU7) ==========
+export interface Report {
+  id?: number;
+  studentId: number;
+  teacherId: number | null;
+  content: string;
+  type: 'academic' | 'behavioral' | 'attendance' | 'mixed';
+  urgency: 'low' | 'medium' | 'high';
+  date: string;
+  evidence?: string[];
+}
+
+// ========== NUEVO: Reporte de Seguimiento (CU6) ==========
+export interface FollowUpReport {
+  id?: number;
+  studentId: number;
+  studentName: string;
+  teacherId: number;
+  teacherName: string;
+  type: 'academic' | 'behavioral' | 'attendance' | 'mixed';
+  rating: 'significant_improvement' | 'improvement' | 'stable' | 'declining' | 'critical';
+  observations: string;
+  urgency: 'low' | 'medium' | 'high';
+  evidence?: string[];  // URLs o nombres de archivos
+  createdAt: string;
+  date: string;
+  riskDetected: boolean;
+  notifiedCoordinator: boolean;
 }

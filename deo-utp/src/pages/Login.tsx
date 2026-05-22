@@ -25,10 +25,10 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1e4668 0%, #2c5f8a 50%, #1e4668 100%)' }}>
-      <div className="w-full max-w-md px-6 py-8 text-center">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#1e4668] via-[#2c5f8a] to-[#1e4668]">
+      <div className="w-full max-w-md px-6 py-8">
         {/* Brand */}
-        <div className="mb-8 text-white">
+        <div className="mb-8 text-center text-white">
           <div className="text-6xl mb-4">♿</div>
           <h1 className="text-4xl font-bold mb-1">
             DEO <span className="font-light">Inclusión UTP</span>
@@ -38,34 +38,34 @@ export default function Login() {
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-3xl shadow-2xl p-8">
-          <h2 className="text-xl font-semibold text-slate-800 mb-6">Acceso al Sistema</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8">
+          <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-100 mb-6 text-center">Acceso al Sistema</h2>
 
           <form onSubmit={handleLogin} className="space-y-4">
-            <div className="flex items-center gap-3 bg-slate-50 rounded-full px-4 py-3">
-              <span className="text-slate-400">✉️</span>
+            <div className="flex items-center gap-3 bg-slate-50 dark:bg-gray-700 rounded-full px-4 py-3">
+              <span className="text-slate-400 dark:text-slate-400">✉️</span>
               <input
                 type="text"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="Correo electrónico"
-                className="flex-1 bg-transparent outline-none text-sm text-slate-700 placeholder-slate-400"
+                className="flex-1 bg-transparent outline-none text-sm text-slate-700 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500"
               />
             </div>
-            <div className="flex items-center gap-3 bg-slate-50 rounded-full px-4 py-3">
-              <span className="text-slate-400">🔒</span>
+            <div className="flex items-center gap-3 bg-slate-50 dark:bg-gray-700 rounded-full px-4 py-3">
+              <span className="text-slate-400 dark:text-slate-400">🔒</span>
               <input
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 placeholder="Contraseña"
-                className="flex-1 bg-transparent outline-none text-sm text-slate-700 placeholder-slate-400"
+                className="flex-1 bg-transparent outline-none text-sm text-slate-700 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500"
                 onKeyDown={e => e.key === 'Enter' && handleLogin(e)}
               />
             </div>
 
             {error && (
-              <div className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-xl border border-red-100">
+              <div className="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-300 text-sm px-4 py-3 rounded-xl border border-red-100 dark:border-red-800">
                 {error}
               </div>
             )}
@@ -73,7 +73,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading || !dbReady}
-              className="w-full py-3 rounded-full font-semibold text-white transition-all duration-200 disabled:opacity-60"
+              className="w-full py-3 rounded-full font-semibold text-white transition-all duration-200 disabled:opacity-60 hover:opacity-90"
               style={{ background: '#1e4668' }}
             >
               {loading ? 'Verificando...' : !dbReady ? 'Iniciando...' : 'Ingresar →'}
@@ -81,14 +81,14 @@ export default function Login() {
           </form>
 
           {/* Demo credentials */}
-          <div className="mt-6 text-left">
-            <p className="text-xs font-semibold text-slate-500 mb-3">🔐 Credenciales de prueba:</p>
+          <div className="mt-6">
+            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 text-center">🔐 Credenciales de prueba:</p>
             <div className="space-y-2">
               {DEMO_CREDS.map(cred => (
                 <button
                   key={cred.email}
                   onClick={() => { setEmail(cred.email); setPassword(cred.pass); setError(''); }}
-                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-colors duration-150"
+                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-colors duration-150 hover:opacity-80"
                   style={{ background: '#e8f0fe', color: '#1e4668' }}
                 >
                   {cred.icon} {cred.label}: {cred.email} / {cred.pass}
