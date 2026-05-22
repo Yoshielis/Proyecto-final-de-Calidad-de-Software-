@@ -19,7 +19,14 @@ import {
   getStudentProgressStats
 } from '../lib/database';
 
-type Tab = 'students' | 'teachers' | 'coordinators' | 'reports' | 'stats' | 'add';
+type Tab =
+  | 'students'
+  | 'teachers'
+  | 'coordinators'
+  | 'reports'
+  | 'stats'
+  | 'add'
+  | 'pending';
 const RISK_COLORS: Record<string, string> = { high: '#e74c3c', medium: '#f39c12', low: '#27ae60' };
 
 export default function AdminDashboard() {
@@ -77,6 +84,11 @@ export default function AdminDashboard() {
   }
 
   useEffect(() => { load(); }, []);
+  useEffect(() => {
+  if (editingStudent) {
+    setActiveTab('students');
+  }
+}, [editingStudent]);
 
   async function handleDeleteStudent(id: number, name: string) {
     if (!confirm(`¿Eliminar a ${name}?`)) return;
@@ -107,6 +119,7 @@ export default function AdminDashboard() {
       email: sEmail,
       password: '123456',
       name: sName,
+      status: 'pending',
       cedula: sCedula,
       phone: sPhone,
       birthDate: '',
@@ -167,6 +180,15 @@ export default function AdminDashboard() {
   }
 
   const activeAlerts = students.filter(s => s.alerts.length > 0).length;
+  // 🔥 FUNCIÓN: asignación automática de profesores
+function assignTeachersToStudent(student: Student, teachers: Teacher[]) {
+  const shuffled = [...teachers].sort(() => Math.random() - 0.5);
+
+  return shuffled.slice(0, 2).map(t => ({
+    teacherId: t.id,
+    teacherName: t.name,
+  }));
+}
   const filteredReports = reportFilterStudent === 'all'
     ? dailyReports
     : dailyReports.filter(r => r.studentId === reportFilterStudent);
@@ -208,7 +230,8 @@ export default function AdminDashboard() {
             ['coordinators', '👔 Coordinadores'],
             ['reports', '📋 Reportes Diarios'],
             ['stats', '📊 Estadísticas'],
-            ['add', '➕ Agregar']
+            ['add', '➕ Agregar'],
+            ['pending', '📂 Expedientes Pendientes'],
           ].map(([id, label]) => (
             <button
               key={id}
@@ -233,6 +256,84 @@ export default function AdminDashboard() {
                   <input type="text" value={editingStudent.phone || ''} onChange={e => setEditingStudent({ ...editingStudent, phone: e.target.value })} className={inputClass} placeholder="Teléfono" />
                   <input type="text" value={editingStudent.disability || ''} onChange={e => setEditingStudent({ ...editingStudent, disability: e.target.value })} className={inputClass} placeholder="Discapacidad" />
                   <input type="text" value={editingStudent.disabilityCertificate || ''} onChange={e => setEditingStudent({ ...editingStudent, disabilityCertificate: e.target.value })} className={inputClass} placeholder="Certificado" />
+                  {/* ===== SECCIÓN 2: Evaluación de necesidades ===== */}
+
+<select
+  value={editingStudent.disabilityLevel || ''}
+  onChange={e =>
+    setEditingStudent({
+      ...editingStudent,
+      disabilityLevel: e.target.value
+    })
+  }
+  className={inputClass}
+>
+  <option value="">Nivel de discapacidad</option>
+  <option value="Leve">Leve</option>
+  <option value="Moderado">Moderado</option>
+  <option value="Severo">Severo</option>
+</select>
+
+<input
+  type="text"
+  value={editingStudent.academicImpact || ''}
+  onChange={e =>
+    setEditingStudent({
+      ...editingStudent,
+      academicImpact: e.target.value
+    })
+  }
+  className={inputClass}
+  placeholder="Impacto académico"
+/>
+
+{/* ===== SECCIÓN 3: Ajustes razonables ===== */}
+
+<input
+  type="text"
+  value={editingStudent.reasonableAdjustments?.join(', ') || ''}
+  onChange={e =>
+    setEditingStudent({
+      ...editingStudent,
+      reasonableAdjustments: e.target.value
+        .split(',')
+        .map(a => a.trim())
+    })
+  }
+  className={inputClass}
+  placeholder="Ajustes razonables (separados por coma)"
+/>
+
+{/* ===== SECCIÓN 4: Plan de apoyo ===== */}
+
+<textarea
+  value={editingStudent.supportPlan || ''}
+  onChange={e =>
+    setEditingStudent({
+      ...editingStudent,
+      supportPlan: e.target.value
+    })
+  }
+  className={inputClass}
+  placeholder="Plan de apoyo individualizado"
+/>
+
+{/* ===== SECCIÓN 5: Documentación soporte ===== */}
+
+<input
+  type="text"
+  value={editingStudent.supportDocuments?.join(', ') || ''}
+  onChange={e =>
+    setEditingStudent({
+      ...editingStudent,
+      supportDocuments: e.target.value
+        .split(',')
+        .map(d => d.trim())
+    })
+  }
+  className={inputClass}
+  placeholder="Documentos soporte"
+/>
                   <select value={editingStudent.risk} onChange={e => setEditingStudent({ ...editingStudent, risk: e.target.value as any })} className={inputClass}>
                     <option value="low">Bajo Riesgo</option>
                     <option value="medium">Riesgo Medio</option>
@@ -282,6 +383,95 @@ export default function AdminDashboard() {
             )}
           </div>
         )}
+        {/* ========== EXPEDIENTES PENDIENTES ========== */}
+{activeTab === 'pending' && (
+  <div className="space-y-4">
+    <h2 className="text-2xl font-bold">
+      📂 Expedientes Pendientes
+    </h2>
+
+    <p className="text-muted-foreground text-sm">
+      Estudiantes que requieren validación y activación del expediente.
+    </p>
+
+    {students.filter(s => s.status === 'pending').length === 0 ? (
+      <div className="bg-muted/30 rounded-xl p-6 text-center">
+        <p className="text-muted-foreground">
+          ✅ No hay expedientes pendientes
+        </p>
+      </div>
+    ) : (
+      <div className="space-y-3">
+        {students
+          .filter(s => s.status === 'pending')
+          .map(s => (
+            <div
+              key={s.id}
+              className="bg-muted/30 rounded-2xl p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+            >
+              <div>
+                <h3 className="font-semibold text-lg">
+                  {s.avatar} {s.name}
+                </h3>
+
+                <div className="text-sm text-muted-foreground mt-1 space-y-1">
+                  <p>📧 {s.email}</p>
+                  <p>🪪 {s.cedula || 'Sin cédula'}</p>
+                  <p>
+                    ♿ {s.disability || 'Sin discapacidad registrada'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+              
+<button
+  onClick={async () => {
+
+    if (
+      !s.disability ||
+      !s.disabilityLevel ||
+      !s.academicImpact ||
+      !s.supportPlan ||
+      !s.reasonableAdjustments?.length ||
+      !s.supportDocuments?.length
+    ) {
+      alert('⚠️ Complete todas las secciones del expediente');
+      return;
+    }
+
+    const assignedTeachers = assignTeachersToStudent(s, teachers);
+
+    await updateStudent({
+      ...s,
+      status: 'active',
+      assignedTeachers
+    } as any);
+
+    await addAuditLog(
+      `Expediente activado y profesores asignados a ${s.name}`,
+      currentUser!.email,
+      'admin'
+    );
+
+    await load();
+
+    alert('✅ Expediente activado y profesores asignados');
+  }}
+  className="px-4 py-2 rounded-full text-white text-sm"
+  style={{ background: '#27ae60' }}
+>
+  ✅ Activar Expediente
+</button>
+
+    
+              </div>
+            </div>
+          ))}
+      </div>
+    )}
+  </div>
+)}
 
         {/* ========== TABLA DE PROFESORES ========== */}
         {activeTab === 'teachers' && (

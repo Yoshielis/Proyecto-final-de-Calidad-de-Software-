@@ -26,6 +26,21 @@ export interface Student {
   coordinatorId: number;    // NUEVO: ID del coordinador DEO asignado
   createdAt: string;        // NUEVO: Fecha de registro
   updatedAt: string;        // NUEVO: Última actualización
+  status?: 'pending' | 'active' | 'requires_update';
+  assignedTeachers?: {
+  teacherId: number;
+  teacherName: string;
+}[];
+  // ===== NUEVO: Expediente DEO =====
+
+disabilityLevel?: string;
+academicImpact?: string;
+
+reasonableAdjustments?: string[];
+
+supportPlan?: string;
+
+supportDocuments?: string[];
 }
 
 export interface CourseEnrollment {
