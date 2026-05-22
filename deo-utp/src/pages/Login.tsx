@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 const DEMO_CREDS = [
   { label: 'Estudiante', email: 'ana.gomez@utp.ac.pa', pass: '123456', icon: '📚' },
-  { label: 'Profesor', email: 'profesor@utp.ac.pa', pass: '123456', icon: '👨‍🏫' },
+  { label: 'Profesor', email: 'jorge.martinez@utp.ac.pa', pass: '123456', icon: '👨‍🏫' },
   { label: 'Administrador', email: 'admin@utp.ac.pa', pass: '123456', icon: '⚙️' },
 ];
 

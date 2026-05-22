@@ -112,6 +112,18 @@ export async function openDatabase(): Promise<IDBDatabase> {
         store.createIndex('email', 'email', { unique: true });
         store.createIndex('cedula', 'cedula', { unique: true });
         store.add({ 
+          email: 'profesor@utp.ac.pa', 
+          password: '123456', 
+          name: 'Profesor de Prueba',
+          cedula: '0-000-0000', 
+          phone: '0000-0000', 
+          specialty: 'General',
+          department: 'Facultad de Ingeniería', 
+          courses: [],
+          avatar: '👨', 
+          coordinatorId: 1  
+        });
+        store.add({ 
           email: 'jorge.martinez@utp.ac.pa', password: '123456', name: 'Prof. Jorge Martínez',
           cedula: '8-1111-2222', phone: '6111-2222', specialty: 'Matemáticas/Física',
           department: 'Facultad de Ingeniería', courses: ['Matemáticas', 'Física'],
