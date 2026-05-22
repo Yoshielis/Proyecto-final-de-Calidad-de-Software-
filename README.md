@@ -10,3 +10,4 @@ Esto descargará React y todas las dependencias (tarda 1-2 minutos la primera ve
 npm run dev
 
 4. Abre tu navegador en: http://localhost:3000
+5. npm install react-router-dom
